@@ -1,0 +1,147 @@
+﻿@page "/"
+@using Parking.UI.Components.Pages.Dialog
+@using Parking.UI.Models
+@using Parking.UI.Services
+@inject IDialogService DialogService
+@inject IEstacionamentoService EstacionamentoService
+@inject IVeiculoService VeiculoService
+@inject ISnackbar Snackbar
+
+<PageTitle>Benner - Sistemas e Serviços de Gestão Empresarial</PageTitle>
+
+<MudText>CONTROLE DE ESTACIONAMENTO</MudText>
+
+<MudTable Items="@estacionamentosTableModel" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<EstacionamentoTableModel,bool>(FilterFunc)" FixedHeader="true" Height="300px">
+    <ToolBarContent>
+        <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
+        <MudSpacer />
+        <div style="gap: 3px;">
+            <MudButton OnClick="async () => await OpenDialogVeiculosAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DirectionsCarFilled" Color="Color.Primary" Size="Size.Small">veículos</MudButton>
+            <MudButton OnClick="async () => await OpenDialogNovaEntradaAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">nova entrada</MudButton>
+        </div>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Placa do Veículo</MudTh>
+        <MudTh>Modelo do Veículo</MudTh>
+        <MudTh>Data Entrada</MudTh>
+        <MudTh>Data Saída</MudTh>
+        <MudTh>Valor Final</MudTh>
+        <MudTh>Duração</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Placa do Veículo">@context.Veiculo?.Placa</MudTd>
+        <MudTd DataLabel="Modelo do Veículo">@context.Veiculo?.Modelo</MudTd>
+        <MudTd DataLabel="Data Entrada">@context.DataEntrada</MudTd>
+        <MudTd DataLabel="Data Saída">@context.DataSaida</MudTd>
+        <MudTd DataLabel="Valor Final">@context.ValorFinal</MudTd>
+        <MudTd DataLabel="Duração">@context.Duracao</MudTd>
+        @if (@context.DataSaida is null)
+        {
+            <MudTd DataLabel="Editar">
+                <MudButton OnClick="async () => await OpenDialogRegistrarSaidaAsync(context)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ExitToApp" Color="Color.Primary" Size="Size.Small">registrar saída</MudButton>
+            </MudTd>
+        } else
+        {
+            <MudTd DataLabel="Editar">
+            </MudTd>
+        }
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IReadOnlyList<EstacionamentoTableModel> estacionamentosTableModel;
+    private IReadOnlyList<Veiculo> veiculos;
+    private IReadOnlyList<Estacionamento> estacionamentos;
+    private bool _isLoading = true;
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await FetchData();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task FetchData()
+    {
+        estacionamentos = (await EstacionamentoService.GetEstacionamentos()).Estacionamentos;
+        veiculos = (await VeiculoService.GetVeiculos()).Veiculos;
+
+        estacionamentosTableModel = estacionamentos
+        .Join(veiculos,
+              estacionamento => estacionamento.VeiculoId,
+              veiculo => veiculo.Id,
+              (estacionamento, veiculo) => new EstacionamentoTableModel
+                  {
+                      Id = estacionamento.Id,
+                      DataEntrada = estacionamento.DataEntrada,
+                      DataSaida = estacionamento.DataSaida,
+                      ValorFinal = estacionamento.ValorFinal,
+                      Duracao = estacionamento.Duracao,
+                      Veiculo = veiculo
+                  })
+        .ToList()
+        .AsReadOnly();
+    }
+
+    private async Task OpenDialogNovaEntradaAsync()
+    {
+        var parameters = new DialogParameters<NovaEntradaDialog>
+        {
+            { x => x.Veiculos, veiculos },
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<NovaEntradaDialog>("Nova entrada dialog", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled)
+        {
+            await FetchData();
+            Snackbar.Add("Entrada registrada com sucesso!", Severity.Success);
+        }
+    }
+
+    private async Task OpenDialogRegistrarSaidaAsync(EstacionamentoTableModel context)
+    {
+        var parameters = new DialogParameters<RegistrarSaidaDialog>
+        {
+            { x => x.Estacionamento, context },
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<RegistrarSaidaDialog>("Editar estacionamento", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled)
+        {
+            await FetchData();
+            Snackbar.Add("Saída registrada com sucesso!", Severity.Success);
+        }
+    }
+
+    private async Task OpenDialogVeiculosAsync()
+    {
+        var dialog = await DialogService.ShowAsync<VeiculoDialog>("Veiculos");
+    }
+
+    private bool FilterFunc(EstacionamentoTableModel element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (element.Veiculo?.Placa.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+        return false;
+    }
+}

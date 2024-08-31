@@ -1,0 +1,89 @@
+﻿@using Parking.UI.Models
+@using Parking.UI.Services
+@inject IEstacionamentoService EstacionamentoService
+@inject ISnackbar Snackbar
+
+<EditForm Model="@Model" OnValidSubmit="OnPostNovaEntradaAsync">
+    <MudDialog>
+        <TitleContent>
+            Nova entrada de estacionamento
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudTextField Variant="Variant.Outlined"
+                                  T="DateTime"
+                                  Format="s"
+                                  Label="Data de entrada"
+                                  @bind-Value="@Model.DataEntrada"
+                                  For="@(() => Model.DataEntrada)"
+                                  InputType="InputType.DateTimeLocal" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudAutocomplete T="string"
+                                     Label="Placa do Veículo"
+                                     @bind-Value="_placaCarro"
+                                     SearchFunc="@SearchVeiculos"
+                                     Margin="Margin.None"
+                                     Dense="true"
+                                     Variant="Variant.Outlined"
+                                     Clearable />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancelar</MudButton>
+            <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">Salvar e criar</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<Veiculo> Veiculos { get; set; }
+
+    private EstacionamentoModel Model = new();
+
+    private string _placaCarro = "";
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public async void OnPostNovaEntradaAsync()
+    {
+        try
+        {
+            var veiculo = Veiculos.FirstOrDefault(v => v.Placa == _placaCarro);
+            if (veiculo != null)
+            {
+                Model.VeiculoId = veiculo.Id;
+            }
+            await EstacionamentoService.CreateEstacionamento(new CreateEstacionamentoRequest(Model.DataEntrada, null, null, null, Model.VeiculoId));
+            Submit();
+        }
+        catch
+        {
+            Snackbar.Add("Ocorreu um erro ao tentar enviar a requisição ao servidor. Tente novamente mais tarde!", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchVeiculos(string value, CancellationToken token)
+    {
+        await Task.Delay(200, token);
+
+        if (string.IsNullOrEmpty(value))
+            return Veiculos
+                .Select(v => v.Placa)
+                .ToList();
+
+        return Veiculos
+            .Where(v => v.Placa.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+            .Select(v => v.Placa)
+            .ToList();
+    }
+}

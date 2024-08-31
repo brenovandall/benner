@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<style>
+    body {
+        background-color: #EBEBF0;
+    }
+</style>
+
+<MudThemeProvider Theme="@mudTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Style="background-color: #fff" Dense="true" Elevation="1">
+        <MudSpacer />
+        <MudImage Src="https://res.cloudinary.com/dtvypcack/image/upload/v1725108505/benner_dayzux.png" Alt="Mony the dog" Elevation="25" Width="70"  Class="rounded-lg" />
+    </MudAppBar>
+    <MudMainContent Class="mt-16 pa-4">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme mudTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#EC1846",
+            Secondary = "#ff4081",
+        }
+    };
+}

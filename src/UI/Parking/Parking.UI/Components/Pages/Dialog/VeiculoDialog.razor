@@ -1,0 +1,89 @@
+﻿@using Parking.UI.Models
+@using Parking.UI.Services
+@inject IDialogService DialogService
+@inject IVeiculoService VeiculoService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="min-width: 70vw;">
+    <TitleContent>
+        VEÍCULOS
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTable Items="@Veiculos" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<Veiculo,bool>(FilterFunc)" FixedHeader="true" Height="200px">
+                    <ToolBarContent>
+                        <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
+                        <MudSpacer />
+                        <MudButton OnClick="async () => await OpenDialogNovoVeiculoAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">novo veículo</MudButton>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Placa do Veículo</MudTh>
+                        <MudTh>Modelo do Veículo</MudTh>
+                        <MudTh>Cor do Veículo</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Placa do Veículo">@context.Placa</MudTd>
+                        <MudTd DataLabel="Modelo do Veículo">@context.Modelo</MudTd>
+                        <MudTd DataLabel="Cor do Veículo">@context.Cor</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private IReadOnlyList<Veiculo> Veiculos { get; set; }
+    private bool _isLoading = true;
+    private string _searchString = "";
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await FetchData();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task FetchData()
+    {
+        Veiculos = (await VeiculoService.GetVeiculos()).Veiculos;
+    }
+
+    private async Task OpenDialogNovoVeiculoAsync()
+    {
+        var dialog = await DialogService.ShowAsync<NovoVeiculoDialog>("Novo veículo dialog");
+        var result = await dialog.Result;
+
+        if (!result!.Canceled)
+        {
+            await FetchData();
+            Snackbar.Add("Veículo registrado com sucesso!", Severity.Success);
+        }
+    }
+
+    private bool FilterFunc(Veiculo element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (element.Placa.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+        return false;
+    }
+}
