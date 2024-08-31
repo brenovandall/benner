@@ -1,0 +1,13 @@
+﻿global using BuildingBlocks.Behaviors;
+global using BuildingBlocks.Exceptions.Handler;
+global using Carter;
+global using FluentValidation;
+global using BuildingBlocks.CQRS;
+global using Mapster;
+global using MediatR;
+global using Parking.API;
+global using Parking.API.Data;
+global using Microsoft.EntityFrameworkCore;
+global using Parking.API.Exceptions;
+global using BuildingBlocks.Exceptions;
+global using Parking.gRPC;

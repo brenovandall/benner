@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  distributedcache: 
+    image: redis
+      
+  parking.api:
+    image: ${DOCKER_REGISTRY-}parkingapi
+    build:
+      context: .
+      dockerfile: Services/Parking/Parking.API/Dockerfile
+      
+  parking.grpc:
+    image: ${DOCKER_REGISTRY-}parkinggrpc
+    build:
+      context: .
+      dockerfile: Services/Parking/Parking.gRPC/Dockerfile
+

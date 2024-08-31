@@ -1,0 +1,17 @@
+syntax = "proto3";
+option csharp_namespace = "Parking.gRPC";
+package parking;
+
+service ParkingProtoService {
+    rpc CalcularValorFinal (CalcularValorRequest) returns (CalcularValorResponse);
+}
+
+message CalcularValorRequest {
+    string placa = 1;
+    string dataEntrada = 2;
+    string dataSaida = 3;
+}
+
+message CalcularValorResponse {
+    double valorFinal = 1;
+}
