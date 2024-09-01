@@ -7,7 +7,6 @@ service ParkingProtoService {
 }
 
 message CalcularValorRequest {
-    string placa = 1;
     string dataEntrada = 2;
     string dataSaida = 3;
 }

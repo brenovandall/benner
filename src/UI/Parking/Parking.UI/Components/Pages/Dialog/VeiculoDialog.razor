@@ -9,30 +9,39 @@
         VEÍCULOS
     </TitleContent>
     <DialogContent>
-        <MudGrid>
-            <MudItem xs="12">
-                <MudTable Items="@Veiculos" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<Veiculo,bool>(FilterFunc)" FixedHeader="true" Height="200px">
-                    <ToolBarContent>
-                        <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
-                        <MudSpacer />
-                        <MudButton OnClick="async () => await OpenDialogNovoVeiculoAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">novo veículo</MudButton>
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh>Placa do Veículo</MudTh>
-                        <MudTh>Modelo do Veículo</MudTh>
-                        <MudTh>Cor do Veículo</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Placa do Veículo">@context.Placa</MudTd>
-                        <MudTd DataLabel="Modelo do Veículo">@context.Modelo</MudTd>
-                        <MudTd DataLabel="Cor do Veículo">@context.Cor</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
-                    </PagerContent>
-                </MudTable>
-            </MudItem>
-        </MudGrid>
+        @if(_isLoading)
+        {
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTable Items="@Veiculos" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<Veiculo,bool>(FilterFunc)" FixedHeader="true" Height="200px">
+                        <ToolBarContent>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
+                            <MudSpacer />
+                            <MudButton OnClick="async () => await OpenDialogNovoVeiculoAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">novo veículo</MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>Placa do Veículo</MudTh>
+                            <MudTh>Modelo do Veículo</MudTh>
+                            <MudTh>Cor do Veículo</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Placa do Veículo">@context.Placa</MudTd>
+                            <MudTd DataLabel="Modelo do Veículo">@context.Modelo</MudTd>
+                            <MudTd DataLabel="Cor do Veículo">@context.Cor</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancelar</MudButton>
@@ -63,6 +72,8 @@
 
     private async Task FetchData()
     {
+        _isLoading = true;
+
         Veiculos = (await VeiculoService.GetVeiculos()).Veiculos;
     }
 

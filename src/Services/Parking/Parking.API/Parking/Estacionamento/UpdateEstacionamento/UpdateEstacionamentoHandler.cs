@@ -45,7 +45,6 @@ public class UpdateEstacionamentoCommandHandler
         {
             var precoResponse = await parkingClient.CalcularValorFinalAsync(new CalcularValorRequest
             {
-                Placa = placaVeiculo,
                 DataEntrada = estacionamento.DataEntrada.ToString("O"),
                 DataSaida = estacionamento.DataSaida.Value.ToString("O")
             }, cancellationToken: cancellationToken);

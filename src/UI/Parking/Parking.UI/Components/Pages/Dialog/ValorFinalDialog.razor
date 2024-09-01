@@ -1,0 +1,33 @@
+﻿<MudDialog>
+    <TitleContent>
+        Detalhes do estacionamento
+    </TitleContent>
+    <DialogContent>
+        <MudGrid Justify="Justify.Center">
+            <MudItem xs="12">
+                <div style="border: 2px solid #4CAF50; padding: 20px; text-align: center; background-color: #F0FFF0; border-radius: 8px;">
+                    <MudText Typo="Typo.h4" Color="Color.Success" Align="Align.Center">@ValorFinal.ToString("C")</MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Center">Valor Final</MudText>
+                </div>
+            </MudItem>
+            <MudItem xs="12">
+                <div style="border: 2px solid #FF9800; padding: 20px; text-align: center; background-color: #FFF3E0; border-radius: 8px;">
+                    <MudText Typo="Typo.h4" Color="Color.Dark" Align="Align.Center">@Duracao.ToString(@"hh\:mm\:ss")</MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Center">Duração</MudText>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Fechar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public decimal ValorFinal { get; set; }
+    [Parameter] public TimeSpan Duracao { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+}

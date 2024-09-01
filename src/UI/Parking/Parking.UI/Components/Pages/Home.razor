@@ -11,46 +11,56 @@
 
 <MudText>CONTROLE DE ESTACIONAMENTO</MudText>
 
-<MudTable Items="@estacionamentosTableModel" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<EstacionamentoTableModel,bool>(FilterFunc)" FixedHeader="true" Height="300px">
-    <ToolBarContent>
-        <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
-        <MudSpacer />
-        <div style="gap: 3px;">
-            <MudButton OnClick="async () => await OpenDialogVeiculosAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DirectionsCarFilled" Color="Color.Primary" Size="Size.Small">veículos</MudButton>
-            <MudButton OnClick="async () => await OpenDialogNovaEntradaAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">nova entrada</MudButton>
-        </div>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Placa do Veículo</MudTh>
-        <MudTh>Modelo do Veículo</MudTh>
-        <MudTh>Data Entrada</MudTh>
-        <MudTh>Data Saída</MudTh>
-        <MudTh>Valor Final</MudTh>
-        <MudTh>Duração</MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Placa do Veículo">@context.Veiculo?.Placa</MudTd>
-        <MudTd DataLabel="Modelo do Veículo">@context.Veiculo?.Modelo</MudTd>
-        <MudTd DataLabel="Data Entrada">@context.DataEntrada</MudTd>
-        <MudTd DataLabel="Data Saída">@context.DataSaida</MudTd>
-        <MudTd DataLabel="Valor Final">@context.ValorFinal</MudTd>
-        <MudTd DataLabel="Duração">@context.Duracao</MudTd>
-        @if (@context.DataSaida is null)
-        {
-            <MudTd DataLabel="Editar">
-                <MudButton OnClick="async () => await OpenDialogRegistrarSaidaAsync(context)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ExitToApp" Color="Color.Primary" Size="Size.Small">registrar saída</MudButton>
-            </MudTd>
-        } else
-        {
-            <MudTd DataLabel="Editar">
-            </MudTd>
-        }
-    </RowTemplate>
-    <PagerContent>
-        <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
-    </PagerContent>
-</MudTable>
+@if (_isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </div>
+}
+else
+{
+    <MudTable Items="@estacionamentosTableModel" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<EstacionamentoTableModel,bool>(FilterFunc)" FixedHeader="true" Height="300px">
+        <ToolBarContent>
+            <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
+            <MudSpacer />
+            <div style="gap: 3px;">
+                <MudButton OnClick="async () => await OpenDialogVeiculosAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DirectionsCarFilled" Color="Color.Primary" Size="Size.Small">veículos</MudButton>
+                <MudButton OnClick="async () => await OpenDialogNovaEntradaAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">nova entrada</MudButton>
+            </div>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<EstacionamentoTableModel, object>(x=>x.Veiculo!.Placa)">Placa do Veículo</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EstacionamentoTableModel, object>(x=>x.Veiculo!.Modelo)">Modelo do Veículo</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EstacionamentoTableModel, object>(x=>x.DataEntrada)">Data Entrada</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<EstacionamentoTableModel, object>(x=>x.DataSaida!)">Data Saída</MudTableSortLabel></MudTh>
+            <MudTh>Valor Final</MudTh>
+            <MudTh>Duração</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Placa do Veículo">@context.Veiculo?.Placa</MudTd>
+            <MudTd DataLabel="Modelo do Veículo">@context.Veiculo?.Modelo</MudTd>
+            <MudTd DataLabel="Data Entrada">@context.DataEntrada</MudTd>
+            <MudTd DataLabel="Data Saída">@context.DataSaida</MudTd>
+            <MudTd DataLabel="Valor Final">@context.ValorFinal</MudTd>
+            <MudTd DataLabel="Duração">@context.Duracao</MudTd>
+            @if (@context.DataSaida is null)
+            {
+                <MudTd DataLabel="Editar">
+                    <MudButton OnClick="async () => await OpenDialogRegistrarSaidaAsync(context)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ExitToApp" Color="Color.Primary" Size="Size.Small">registrar saída</MudButton>
+                </MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="Editar">
+                </MudTd>
+            }
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
+        </PagerContent>
+    </MudTable>
+}
 
 @code {
     private IReadOnlyList<EstacionamentoTableModel> estacionamentosTableModel;
