@@ -1,4 +1,6 @@
-﻿<MudDialog>
+﻿@using System.Globalization
+
+<MudDialog>
     <TitleContent>
         Detalhes do estacionamento
     </TitleContent>
@@ -6,7 +8,7 @@
         <MudGrid Justify="Justify.Center">
             <MudItem xs="12">
                 <div style="border: 2px solid #4CAF50; padding: 20px; text-align: center; background-color: #F0FFF0; border-radius: 8px;">
-                    <MudText Typo="Typo.h4" Color="Color.Success" Align="Align.Center">@ValorFinal.ToString("C")</MudText>
+                    <MudText Typo="Typo.h4" Color="Color.Success" Align="Align.Center">@ValorFinal.ToString("C", new CultureInfo("pt-BR"))</MudText>
                     <MudText Typo="Typo.subtitle1" Align="Align.Center">Valor Final</MudText>
                 </div>
             </MudItem>
