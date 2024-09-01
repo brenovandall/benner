@@ -72,8 +72,6 @@
 
     private async Task FetchData()
     {
-        _isLoading = true;
-
         Veiculos = (await VeiculoService.GetVeiculos()).Veiculos;
     }
 

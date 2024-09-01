@@ -144,6 +144,12 @@ else
     private async Task OpenDialogVeiculosAsync()
     {
         var dialog = await DialogService.ShowAsync<VeiculoDialog>("Veiculos");
+        var result = await dialog.Result;
+
+        if(result!.Canceled || !result!.Canceled)
+        {
+            await FetchData();
+        }
     }
 
     private bool FilterFunc(EstacionamentoTableModel element)
