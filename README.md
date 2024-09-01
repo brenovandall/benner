@@ -58,9 +58,9 @@ Bancos de dados:
 	1. `git clone https://github.com/brenovandall/benner.git`
 3. Com o projeto clonado, navegue até o diretório `/src` do projeto:
 	1. Geralmente: `cd ~/BennerSolution/src`
-4. Com o Docker iniciado, basta executar este comando dentro do diretório /src para inicializar todos os containeres:
+4. Com o Docker iniciado, basta executar este comando dentro do diretório `/src` para inicializar todos os containeres:
 	1. `docker compose up`
-5. Após todos os containeres iniciares, a aplicação pode ser acessada em: https://localhost:6062
+5. Após todos os containeres iniciarem, a aplicação pode ser acessada em: https://localhost:6062
 
 # Sumário:
 Neste documento, você pode entender sobre:
