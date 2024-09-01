@@ -3,6 +3,7 @@
 @inject IVeiculoService VeiculoService
 @inject ISnackbar Snackbar
 
+<!-- Formulário para adicionar um veículo -->
 <EditForm Model="@Model" OnValidSubmit="OnPostNovoVeiculoAsync">
     <MudDialog>
         <TitleContent>
@@ -51,6 +52,9 @@
 
     private void Cancel() => MudDialog.Cancel();
 
+    /// <summary>
+    /// Método chamado quando o formulário válido é enviado
+    /// </summary>
     public async void OnPostNovoVeiculoAsync()
     {
         try

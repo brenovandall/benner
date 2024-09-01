@@ -4,6 +4,9 @@ public record CreateEstacionamentoCommand(DateTime DataEntrada, DateTime? DataSa
     : ICommand<CreateEstacionamentoResult>;
 public record CreateEstacionamentoResult(Guid Id);
 
+/// <summary>
+/// Validador para os parametros informados em <see cref="CreateEstacionamentoCommand"/>
+/// </summary>
 public class CreateEstacionamentoCommandValidator : AbstractValidator<CreateEstacionamentoCommand>
 {
     public CreateEstacionamentoCommandValidator()
@@ -16,6 +19,9 @@ public class CreateEstacionamentoCommandValidator : AbstractValidator<CreateEsta
 public class CreateEstacionamentoCommandHandler (ParkingContext dbContext) 
     : ICommandHandler<CreateEstacionamentoCommand, CreateEstacionamentoResult>
 {
+    /// <summary>
+    /// Método para criar um novo estacionamento
+    /// </summary>
     public async Task<CreateEstacionamentoResult> Handle(CreateEstacionamentoCommand command, CancellationToken cancellationToken)
     {
         var estacionamento = new Models.Estacionamento
@@ -27,9 +33,10 @@ public class CreateEstacionamentoCommandHandler (ParkingContext dbContext)
             VeiculoId = command.VeiculoId,
         };
 
-        await dbContext.Estacionamentos.AddAsync(estacionamento);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.Estacionamentos.AddAsync(estacionamento); // Adiciona o estacionamento no db
+        await dbContext.SaveChangesAsync(cancellationToken); // Faz o commit no db
 
+        // Retorna o ID do novo registro
         return new CreateEstacionamentoResult(estacionamento.Id);
     }
 }

@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
+<!-- Formulário para registrar a saída do veículo -->
 <EditForm Model="@Estacionamento" OnValidSubmit="OnPostRegistrarSaidaAsync">
     <DataAnnotationsValidator />
     <MudDialog>
@@ -53,6 +54,9 @@
 
     private void Cancel() => MudDialog.Cancel();
 
+    /// <summary>
+    /// Método chamado ao enviar um formulário válido
+    /// </summary>
     public async void OnPostRegistrarSaidaAsync()
     {
         _isProcessing = true;
@@ -61,6 +65,7 @@
         {
             await EstacionamentoService.UpdateEstacionamento(new UpdateEstacionamentoRequest(Estacionamento.Id, Estacionamento.DataEntrada, Estacionamento.DataSaida, null, null, Estacionamento.Veiculo!.Id));
 
+            // Busca os dados atualizados para mostrar em tela
             var updatedEstacionamento = await EstacionamentoService.GetEstacionamentoById(Estacionamento.Id);
             await ShowValorFinalDialogAsync(updatedEstacionamento.Estacionamento);
         }
@@ -74,6 +79,9 @@
         }
     }
 
+    /// <summary>
+    /// Exibe um dialog com o valor final e duração
+    /// </summary>
     private async Task ShowValorFinalDialogAsync(Estacionamento updatedEstacionamento)
     {
         var parameters = new DialogParameters

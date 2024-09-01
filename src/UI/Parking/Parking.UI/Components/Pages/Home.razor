@@ -13,18 +13,23 @@
 
 @if (_isLoading)
 {
+    <!-- Exibe um spinner enquanto os dados estão sendo carregados -->
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
     </div>
 }
 else
 {
+    <!-- Tabela com todos os estacionamentos -->
     <MudTable Items="@estacionamentosTableModel" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<EstacionamentoTableModel,bool>(FilterFunc)" FixedHeader="true" Height="300px">
         <ToolBarContent>
+            <!-- Campo para filtrar pela placa do veículo -->
             <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
             <MudSpacer />
             <div style="gap: 3px;">
+                <!-- Botão para dialog de veículos -->
                 <MudButton OnClick="async () => await OpenDialogVeiculosAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DirectionsCarFilled" Color="Color.Primary" Size="Size.Small">veículos</MudButton>
+                <!-- Botão para adicionar nova entrada -->
                 <MudButton OnClick="async () => await OpenDialogNovaEntradaAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">nova entrada</MudButton>
             </div>
         </ToolBarContent>
@@ -56,6 +61,7 @@ else
                 </MudTd>
             }
         </RowTemplate>
+        <!-- Paginação da tabela -->
         <PagerContent>
             <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
         </PagerContent>
@@ -69,6 +75,9 @@ else
     private bool _isLoading = true;
     private string _searchString = "";
 
+    /// <summary>
+    /// Carrega os dados iniciais do componente
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
@@ -81,6 +90,9 @@ else
         }
     }
 
+    /// <summary>
+    /// Carrega os estacionamentos para a tabela
+    /// </summary>
     private async Task FetchData()
     {
         estacionamentos = (await EstacionamentoService.GetEstacionamentos()).Estacionamentos;
@@ -103,6 +115,9 @@ else
         .AsReadOnly();
     }
 
+    /// <summary>
+    /// Abre um dialog para registrar uma nova entrada
+    /// </summary>
     private async Task OpenDialogNovaEntradaAsync()
     {
         var parameters = new DialogParameters<NovaEntradaDialog>
@@ -117,11 +132,14 @@ else
 
         if (!result!.Canceled)
         {
-            await FetchData();
+            await FetchData(); // Atualiza os dados após a saída do dialog
             Snackbar.Add("Entrada registrada com sucesso!", Severity.Success);
         }
     }
 
+    /// <summary>
+    /// Abre um dialog para registrar uma saída
+    /// </summary>
     private async Task OpenDialogRegistrarSaidaAsync(EstacionamentoTableModel context)
     {
         var parameters = new DialogParameters<RegistrarSaidaDialog>
@@ -136,11 +154,14 @@ else
 
         if (!result!.Canceled)
         {
-            await FetchData();
+            await FetchData(); // Atualiza os dados após a saída do dialog
             Snackbar.Add("Saída registrada com sucesso!", Severity.Success);
         }
     }
 
+    /// <summary>
+    /// Abre o dialog dos veículos
+    /// </summary>
     private async Task OpenDialogVeiculosAsync()
     {
         var dialog = await DialogService.ShowAsync<VeiculoDialog>("Veiculos");
@@ -148,10 +169,13 @@ else
 
         if(result!.Canceled || !result!.Canceled)
         {
-            await FetchData();
+            await FetchData(); // Atualiza os dados após a saída ou submit do dialog
         }
     }
 
+    /// <summary>
+    /// Método para filtro
+    /// </summary>
     private bool FilterFunc(EstacionamentoTableModel element)
     {
         if (string.IsNullOrWhiteSpace(_searchString))

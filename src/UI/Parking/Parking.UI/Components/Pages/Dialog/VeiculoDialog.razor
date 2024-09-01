@@ -9,20 +9,24 @@
         VEÍCULOS
     </TitleContent>
     <DialogContent>
-        @if(_isLoading)
+        @if (_isLoading)
         {
+            <!-- Exibe um spinner enquanto os dados estão sendo carregados -->
             <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
                 <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
             </div>
         }
         else
         {
+            <!-- Tabela com todos os veículos -->
             <MudGrid>
                 <MudItem xs="12">
                     <MudTable Items="@Veiculos" Dense="true" Hover="true" Bordered="true" Striped="false" Filter="new Func<Veiculo,bool>(FilterFunc)" FixedHeader="true" Height="200px">
                         <ToolBarContent>
+                            <!-- Campo para filtrar pela placa do veículo -->
                             <MudTextField @bind-Value="_searchString" Placeholder="Pesquise pela placa do veículo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Clearable></MudTextField>
                             <MudSpacer />
+                            <!-- Botão para adicionar novo veículo -->
                             <MudButton OnClick="async () => await OpenDialogNovoVeiculoAsync()" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Success" Size="Size.Small">novo veículo</MudButton>
                         </ToolBarContent>
                         <HeaderContent>
@@ -35,6 +39,7 @@
                             <MudTd DataLabel="Modelo do Veículo">@context.Modelo</MudTd>
                             <MudTd DataLabel="Cor do Veículo">@context.Cor</MudTd>
                         </RowTemplate>
+                        <!-- Paginação da tabela -->
                         <PagerContent>
                             <MudTablePager RowsPerPageString="Registros por página:" PageSizeOptions="new int[] { 50, 25, 10 }" InfoFormat="{first_item}-{last_item} de {all_items}" />
                         </PagerContent>
@@ -58,6 +63,9 @@
 
     private void Cancel() => MudDialog.Cancel();
 
+    /// <summary>
+    /// Carrega os dados iniciais do componente
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
@@ -70,11 +78,17 @@
         }
     }
 
+    /// <summary>
+    /// Carrega os veiculo para a tabela
+    /// </summary>
     private async Task FetchData()
     {
         Veiculos = (await VeiculoService.GetVeiculos()).Veiculos;
     }
 
+    /// <summary>
+    /// Abre um dialog para registrar um novo veículo
+    /// </summary>
     private async Task OpenDialogNovoVeiculoAsync()
     {
         var dialog = await DialogService.ShowAsync<NovoVeiculoDialog>("Novo veículo dialog");
@@ -87,6 +101,9 @@
         }
     }
 
+    /// <summary>
+    /// Método para filtro
+    /// </summary>
     private bool FilterFunc(Veiculo element)
     {
         if (string.IsNullOrWhiteSpace(_searchString))

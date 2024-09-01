@@ -11,6 +11,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
+// Configuração das interfaces com o Refit
 builder.Services.AddRefitClient<IEstacionamentoService>()
     .ConfigureHttpClient(c =>
     {

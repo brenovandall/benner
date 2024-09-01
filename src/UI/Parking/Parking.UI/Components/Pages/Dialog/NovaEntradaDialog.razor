@@ -3,6 +3,7 @@
 @inject IEstacionamentoService EstacionamentoService
 @inject ISnackbar Snackbar
 
+<!-- Formulário para registrar uma nova entrada de veículo no estacionamento -->
 <EditForm Model="@Model" OnValidSubmit="OnPostNovaEntradaAsync">
     <MudDialog>
         <TitleContent>
@@ -54,6 +55,9 @@
 
     private void Cancel() => MudDialog.Cancel();
 
+    /// <summary>
+    /// Método chamado quando o formulário válido é enviado
+    /// </summary>
     public async void OnPostNovaEntradaAsync()
     {
         try
@@ -72,6 +76,9 @@
         }
     }
 
+    /// <summary>
+    /// Método para buscar as placas no campo autocomplete
+    /// </summary>
     private async Task<IEnumerable<string>> SearchVeiculos(string value, CancellationToken token)
     {
         await Task.Delay(200, token);

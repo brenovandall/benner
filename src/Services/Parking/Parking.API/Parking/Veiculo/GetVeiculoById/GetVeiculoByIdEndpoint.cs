@@ -3,14 +3,19 @@
 // public record GetVeiculoByIdRequest();
 public record GetVeiculoByIdResponse(Models.Veiculo Veiculo);
 
+/// <summary>
+/// Endpoint para obter um veículo pelo ID
+/// </summary>
 public class GetVeiculoByIdEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/veiculo/{id}", async (Guid id, ISender sender) =>
         {
+            // Envia o comando através do MediatR com o ID informado
             var result = await sender.Send(new GetVeiculoByIdQuery(id));
 
+            // Faz o mapeamento do resultado
             var response = result.Adapt<GetVeiculoByIdResponse>();
 
             return Results.Ok(response);

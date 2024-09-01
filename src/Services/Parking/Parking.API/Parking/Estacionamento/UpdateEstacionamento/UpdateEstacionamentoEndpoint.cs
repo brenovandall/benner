@@ -5,6 +5,9 @@ public record UpdateEstacionamentoRequest(Guid Id, DateTime DataEntrada, DateTim
     : ICommand<UpdateEstacionamentoResult>;
 public record UpdateEstacionamentoResponse(bool IsSucess);
 
+/// <summary>
+/// Endpoint para editar um estacionamento (voltado para registro de saída)
+/// </summary>
 public class UpdateEstacionamentoEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
