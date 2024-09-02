@@ -19,6 +19,8 @@ Apresentação em vídeo: https://youtu.be/1pkTg2ndZ1c
 # Arquitetura do sistema:
 ![Arquitetura do sistema](https://res.cloudinary.com/dtvypcack/image/upload/v1725220273/Arquitetura_dbolfh.png)
 
+Estrutura: CQRS + Vertical Slice Architecture com microsserviços
+
 Tecnologias utilizadas:
 - Building Blocks:
 	- FluentValidation Versão 11.9.2
